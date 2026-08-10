@@ -1,2 +1,6 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Perlakukan .mwb sebagai binary, jangan coba diff/merge
+*.mwb binary -diff -merge
+
+# Pastikan line ending konsisten untuk file text pendukung
+*.sql text eol=lf
+*.md text eol=lf

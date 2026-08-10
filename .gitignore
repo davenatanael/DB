@@ -1,0 +1,7 @@
+# Backup files MWB
+*.mwb.bak
+*.mwb~
+
+# Temporary files
+.DS_Store
+Thumbs.db
