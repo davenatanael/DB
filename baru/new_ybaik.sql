@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `agents` (
   CONSTRAINT `fk_agents_states1` FOREIGN KEY (`states_id`) REFERENCES `states` (`id`),
   CONSTRAINT `fk_agents_subregions1` FOREIGN KEY (`subregions_id`) REFERENCES `subregions` (`id`),
   CONSTRAINT `fk_agents_users1` FOREIGN KEY (`users_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS `bank_accounts` (
   `nama_bank` varchar(45) NOT NULL,
   `nomor_rekening` varchar(45) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -229,7 +229,7 @@ CREATE TABLE IF NOT EXISTS `companions` (
   PRIMARY KEY (`id`),
   KEY `fk_companions_students1_idx` (`student_id`),
   CONSTRAINT `fk_companions_students1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -247,7 +247,7 @@ CREATE TABLE IF NOT EXISTS `companion_parent_company_backgrounds` (
   PRIMARY KEY (`id`),
   KEY `fk_companion_parent_company_backgrounds_companions1_idx` (`companion_id`),
   CONSTRAINT `fk_companion_parent_company_backgrounds_companions1` FOREIGN KEY (`companion_id`) REFERENCES `companions` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -265,7 +265,7 @@ CREATE TABLE IF NOT EXISTS `companion_relations` (
   KEY `fk_companion_relations_companions2_idx` (`companions_2_id`),
   CONSTRAINT `fk_companion_relations_companions1` FOREIGN KEY (`companions_id`) REFERENCES `companions` (`id`),
   CONSTRAINT `fk_companion_relations_companions2` FOREIGN KEY (`companions_2_id`) REFERENCES `companions` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -283,7 +283,7 @@ CREATE TABLE IF NOT EXISTS `companion_travel_historys` (
   PRIMARY KEY (`id`),
   KEY `fk_companion_travel_historys_companions1_idx` (`companion_id`),
   CONSTRAINT `fk_companion_travel_historys_companions1` FOREIGN KEY (`companion_id`) REFERENCES `companions` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -310,7 +310,7 @@ CREATE TABLE IF NOT EXISTS `consultants` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=108 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=108 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -325,7 +325,7 @@ CREATE TABLE IF NOT EXISTS `consultant_komisis` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -340,7 +340,7 @@ CREATE TABLE IF NOT EXISTS `consultant_komisi_details` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -443,7 +443,7 @@ CREATE TABLE IF NOT EXISTS `customers` (
   CONSTRAINT `consultant` FOREIGN KEY (`consultant_id`) REFERENCES `consultants` (`id`) ON DELETE SET NULL,
   CONSTRAINT `koordinator` FOREIGN KEY (`koordinator_id`) REFERENCES `koordinators` (`id`) ON DELETE SET NULL,
   CONSTRAINT `korwil` FOREIGN KEY (`korwil_id`) REFERENCES `agents` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1267 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1267 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -457,7 +457,7 @@ CREATE TABLE IF NOT EXISTS `customer_comments` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=91 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -472,7 +472,7 @@ CREATE TABLE IF NOT EXISTS `customer_ratings` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -539,7 +539,7 @@ CREATE TABLE IF NOT EXISTS `employees` (
   `update_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -555,7 +555,7 @@ CREATE TABLE IF NOT EXISTS `employee_kinerjas` (
   PRIMARY KEY (`id`),
   KEY `fk_employee_kinerjas_employees1_idx` (`employees_id`),
   CONSTRAINT `fk_employee_kinerjas_employees1` FOREIGN KEY (`employees_id`) REFERENCES `employees` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -571,7 +571,7 @@ CREATE TABLE IF NOT EXISTS `employee_warnings` (
   PRIMARY KEY (`id`),
   KEY `fk_employee_warnings_employees1_idx` (`employees_id`),
   CONSTRAINT `fk_employee_warnings_employees1` FOREIGN KEY (`employees_id`) REFERENCES `employees` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -731,7 +731,7 @@ CREATE TABLE IF NOT EXISTS `glossaries` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -762,7 +762,7 @@ CREATE TABLE IF NOT EXISTS `kabupatens` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`kab_id`),
   KEY `kabupatens_prop_id_foreign` (`prop_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -788,7 +788,7 @@ CREATE TABLE IF NOT EXISTS `koordinators` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -802,7 +802,7 @@ CREATE TABLE IF NOT EXISTS `kurs` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -815,7 +815,7 @@ CREATE TABLE IF NOT EXISTS `locations` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -836,7 +836,7 @@ CREATE TABLE IF NOT EXISTS `log_admin_students` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -853,7 +853,7 @@ CREATE TABLE IF NOT EXISTS `notifications` (
   PRIMARY KEY (`id`),
   KEY `fk_notifications_admin_students1_idx` (`admin_student_id`),
   CONSTRAINT `fk_notifications_admin_students1` FOREIGN KEY (`admin_student_id`) REFERENCES `admin_students` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -875,7 +875,7 @@ CREATE TABLE IF NOT EXISTS `payments` (
   PRIMARY KEY (`id`),
   KEY `fk_payments_student_payment_types1_idx` (`student_payment_type_id`),
   CONSTRAINT `fk_payments_student_payment_types1` FOREIGN KEY (`student_payment_type_id`) REFERENCES `student_payment_types` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=441 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=441 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -897,7 +897,7 @@ CREATE TABLE IF NOT EXISTS `payment_details` (
   PRIMARY KEY (`id`),
   KEY `fk_payment_details_payments1_idx` (`payment_id`),
   CONSTRAINT `fk_payment_details_payments1` FOREIGN KEY (`payment_id`) REFERENCES `payments` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=463 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=463 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -952,7 +952,7 @@ CREATE TABLE IF NOT EXISTS `payrolls` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -983,7 +983,7 @@ CREATE TABLE IF NOT EXISTS `penawarans` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -996,7 +996,7 @@ CREATE TABLE IF NOT EXISTS `privileges` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   `keterangan` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1010,7 +1010,7 @@ CREATE TABLE IF NOT EXISTS `privileges_has_roles` (
   KEY `fk_privileges_has_roles_privileges1_idx` (`privilege_id`),
   CONSTRAINT `fk_privileges_has_roles_privileges1` FOREIGN KEY (`privilege_id`) REFERENCES `privileges` (`id`),
   CONSTRAINT `fk_privileges_has_roles_roles1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1037,7 +1037,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1053,7 +1053,7 @@ CREATE TABLE IF NOT EXISTS `scholarship` (
   PRIMARY KEY (`id`),
   KEY `fk_scholarship_univ_programs1_idx` (`id_univprogram`),
   CONSTRAINT `fk_scholarship_univ_programs1` FOREIGN KEY (`id_univprogram`) REFERENCES `univ_programs` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1085,7 +1085,7 @@ CREATE TABLE IF NOT EXISTS `sekolah` (
   KEY `fk_sekolah_agents1_idx` (`agent_id`),
   CONSTRAINT `fk_sekolah_agents1` FOREIGN KEY (`agent_id`) REFERENCES `agents` (`id`),
   CONSTRAINT `fk_sekolah_countries1` FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=250483 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=250483 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1173,7 +1173,7 @@ CREATE TABLE IF NOT EXISTS `students` (
   PRIMARY KEY (`id`),
   KEY `fk_students_users1_idx` (`user_id`),
   CONSTRAINT `fk_students_users1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=598 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=598 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1187,7 +1187,7 @@ CREATE TABLE IF NOT EXISTS `students_has_payments` (
   KEY `fk_students_has_payments_students1_idx` (`student_id`),
   CONSTRAINT `fk_students_has_payments_payments1` FOREIGN KEY (`payment_id`) REFERENCES `payments` (`id`),
   CONSTRAINT `fk_students_has_payments_students1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1205,7 +1205,7 @@ CREATE TABLE IF NOT EXISTS `student_education_backgrounds` (
   PRIMARY KEY (`id`),
   KEY `fk_student_education_backgrounds_students1_idx` (`student_id`),
   CONSTRAINT `fk_student_education_backgrounds_students1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=720 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=720 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1283,7 +1283,7 @@ CREATE TABLE IF NOT EXISTS `student_files` (
   KEY `fk_student_files_students1_idx` (`student_id`),
   CONSTRAINT `fk_student_files_students1` FOREIGN KEY (`student_id`) REFERENCES `students` (`id`),
   CONSTRAINT `student_files_type_foreign` FOREIGN KEY (`type`) REFERENCES `student_file_types` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11768 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11768 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1334,7 +1334,7 @@ CREATE TABLE IF NOT EXISTS `student_payment_discounts` (
   PRIMARY KEY (`id`),
   KEY `fk_student_payment_discounts_student_payments_idx` (`student_payment_id`),
   CONSTRAINT `fk_student_payment_discounts_student_payments` FOREIGN KEY (`student_payment_id`) REFERENCES `payments` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1466,7 +1466,7 @@ CREATE TABLE IF NOT EXISTS `universities` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=300 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=300 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1482,7 +1482,7 @@ CREATE TABLE IF NOT EXISTS `univ_accomodations` (
   PRIMARY KEY (`id`),
   KEY `fk_univ_accomodations_universities1_idx` (`univ_id`),
   CONSTRAINT `fk_univ_accomodations_universities1` FOREIGN KEY (`univ_id`) REFERENCES `universities` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=332 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=332 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1502,7 +1502,7 @@ CREATE TABLE IF NOT EXISTS `univ_accomodation_details` (
   PRIMARY KEY (`id`),
   KEY `fk_univ_accomodation_details_univ_accomodations1_idx` (`univ_accomodations_id`),
   CONSTRAINT `fk_univ_accomodation_details_univ_accomodations1` FOREIGN KEY (`univ_accomodations_id`) REFERENCES `univ_accomodations` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=658 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=658 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1521,7 +1521,7 @@ CREATE TABLE IF NOT EXISTS `univ_accomodation_photos` (
   KEY `fk_univ_accomodation_photos_univ_accomodations1_idx` (`univ_accomodations_id`),
   CONSTRAINT `fk_univ_accomodation_photos_univ_accomodations1` FOREIGN KEY (`univ_accomodations_id`) REFERENCES `univ_accomodations` (`id`),
   CONSTRAINT `fk_univ_accomodation_photos_universities1` FOREIGN KEY (`univ_id`) REFERENCES `universities` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1550,7 +1550,7 @@ CREATE TABLE IF NOT EXISTS `univ_entry_requirements` (
   PRIMARY KEY (`id`),
   KEY `fk_univ_entry_requirements_universities1_idx` (`univ_id`),
   CONSTRAINT `fk_univ_entry_requirements_universities1` FOREIGN KEY (`univ_id`) REFERENCES `universities` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=415 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=415 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1562,7 +1562,7 @@ CREATE TABLE IF NOT EXISTS `univ_facilities` (
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=504 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=504 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1576,7 +1576,7 @@ CREATE TABLE IF NOT EXISTS `univ_facilities_details` (
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=898 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=898 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1596,7 +1596,7 @@ CREATE TABLE IF NOT EXISTS `univ_fee_structures` (
   PRIMARY KEY (`id`),
   KEY `fk_univ_fee_structures_universities1_idx` (`univ_id`),
   CONSTRAINT `fk_univ_fee_structures_universities1` FOREIGN KEY (`univ_id`) REFERENCES `universities` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=632 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=632 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1631,7 +1631,7 @@ CREATE TABLE IF NOT EXISTS `univ_has_facilites` (
   KEY `fk_univ_facilities_has_universities_univ_facilities1_idx` (`univ_facilities_id`),
   CONSTRAINT `fk_univ_facilities_has_universities_univ_facilities1` FOREIGN KEY (`univ_facilities_id`) REFERENCES `univ_facilities` (`id`),
   CONSTRAINT `fk_univ_facilities_has_universities_universities1` FOREIGN KEY (`univ_id`) REFERENCES `universities` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1666,7 +1666,7 @@ CREATE TABLE IF NOT EXISTS `univ_programs` (
   PRIMARY KEY (`id`),
   KEY `fk_univ_programs_universities1_idx` (`univ_id`),
   CONSTRAINT `fk_univ_programs_universities1` FOREIGN KEY (`univ_id`) REFERENCES `universities` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=46009 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=46009 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1688,7 +1688,7 @@ CREATE TABLE IF NOT EXISTS `univ_scholarships` (
   PRIMARY KEY (`id`),
   KEY `fk_univ_scholarships_universities1_idx` (`univ_id`),
   CONSTRAINT `fk_univ_scholarships_universities1` FOREIGN KEY (`univ_id`) REFERENCES `universities` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=899 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=899 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
@@ -1721,7 +1721,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   KEY `fk_users_bank_accounts1_idx` (`bank_accounts_id`),
   CONSTRAINT `fk_users_bank_accounts1` FOREIGN KEY (`bank_accounts_id`) REFERENCES `bank_accounts` (`id`),
   CONSTRAINT `fk_users_roles1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=953 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=953 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Data exporting was unselected.
 
