@@ -197,14 +197,13 @@ try {
             NULL AS `states_id`,
             NULL AS `cities_id`,
             NULL AS `alamat`,
-            sc.`about`,
+            NULL AS `about`,
             NULL AS `note`,
             c.`created_at`,
             c.`updated_at`,
             c.`deleted_at`
         FROM `$sourceDb`.`customers` c
         INNER JOIN `$targetDb`.`users` u ON u.`id` = c.`user_id`
-        LEFT JOIN `$sourceDb`.`schools` sc ON sc.`customer_id` = c.`id`
         WHERE c.`category` = 6
           AND c.`user_id` IS NOT NULL
     ";
