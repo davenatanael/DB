@@ -159,7 +159,7 @@ try {
     // Aktifkan kembali Foreign Key Checks
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
-    echo "=== Migrasi univ_categories dan universities Selesai ===";
+    echo "=== Migrasi univ_categories dan universities Selesai ===\n";
 
 } catch (PDOException $e) {
     if (isset($pdo)) {
