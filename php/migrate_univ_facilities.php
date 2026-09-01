@@ -9,10 +9,11 @@
  *   Target: db_ybaik_new.univ_facilities
  *   Mengisi 19 kategori fasilitas standar (Library, Sport Facilities, Canteen, dsb.)
  *
- * TAHAP 2: univ_has_facilities (Relasi Fasilitas Universitas)
+ * TAHAP 2: univ_has_facilities (Data Fasilitas Universitas Lengkap)
  *   Sumber: outclassco_marketing.univ_facilities_details JOIN outclassco_marketing.univ_facilities
  *   Target: db_ybaik_new.univ_has_facilities
- *   Menghubungkan univ_id dengan univ_facilities_id (kategori 1..19), nama detail, dan foto.
+ *   Menghubungkan univ_id dengan univ_facilities_id (kategori 1..19 atau NULL jika tidak yakin),
+ *   nama detail fasilitas, foto/image, dan timestamps.
  *
  * PRASYARAT: universities HARUS sudah dimigrasikan duluan.
  */
@@ -70,7 +71,8 @@ function mapFacilityNameToCategoryId($name, $categoryMap) {
     if (preg_match('/(post office|shop|souvenir|recharge|service|coach|toilet)/i', $n)) return $categoryMap['Campus Services'];
     if (preg_match('/(building|hall|center|centre|campus|base|headquarters|workshop|school of design|secondary art school|meeting room)/i', $n)) return $categoryMap['Campus Building'];
 
-    return $categoryMap['Other'];
+    // Jika tidak yakin atau tidak ada di kategori yang ada, kembalikan NULL
+    return null;
 }
 
 try {
@@ -83,8 +85,22 @@ try {
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
 
     echo "====================================================================\n";
-    echo "    MEMULAI MIGRASI DATA FASILITAS UNIVERSITAS (CATEGORIES & HAS)   \n";
+    echo "    MEMULAI MIGRASI DATA FASILITAS UNIVERSITAS LENGKAP              \n";
     echo "====================================================================\n\n";
+
+    // Pastikan struktur tabel univ_has_facilities mendukung id AUTO_INCREMENT dan univ_facilities_id NULL
+    $checkId = $pdo->query("SHOW COLUMNS FROM `$targetDb`.`univ_has_facilities` LIKE 'id'")->fetch();
+    if (!$checkId) {
+        echo "Menyesuaikan struktur tabel `univ_has_facilities`...\n";
+        $pdo->exec("
+            ALTER TABLE `$targetDb`.`univ_has_facilities`
+            MODIFY COLUMN `univ_facilities_id` BIGINT(20) NULL,
+            MODIFY COLUMN `name` VARCHAR(255) NULL,
+            DROP PRIMARY KEY,
+            ADD COLUMN `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST
+        ");
+        echo "-> Struktur tabel `univ_has_facilities` berhasil disesuaikan.\n\n";
+    }
 
     // Kosongkan tabel target
     $pdo->exec("TRUNCATE TABLE `$targetDb`.`univ_has_facilities`");
@@ -111,13 +127,14 @@ try {
     echo "   -> Berhasil memasukkan $countCat master kategori fasilitas.\n\n";
 
     // =========================================================================
-    // TAHAP 2 : MEMIGRASI RELASI FASILITAS KE univ_has_facilities
+    // TAHAP 2 : MEMIGRASI SELURUH DATA FASILITAS KE univ_has_facilities
     // =========================================================================
-    echo "2. Memigrasi data fasilitas ke univ_has_facilities...\n";
+    echo "2. Memigrasi seluruh data fasilitas ke univ_has_facilities...\n";
 
-    // Ambil data detail fasilitas dari DB lama bersama nama fasilitas induknya
+    // Ambil seluruh data detail fasilitas dari DB lama bersama nama fasilitas induknya
     $sourceQuery = "
         SELECT 
+            ufd.id AS detail_id,
             uf.univ_id,
             uf.name AS fac_name,
             ufd.name AS detail_name,
@@ -132,31 +149,32 @@ try {
     $sourceRows = $pdo->query($sourceQuery)->fetchAll();
     $totalSource = count($sourceRows);
 
-    $insertHasStmt = $pdo->prepare("
+    $insertStmt = $pdo->prepare("
         INSERT INTO `$targetDb`.`univ_has_facilities` (
-            `univ_id`, `univ_facilities_id`, `name`, `image`,
+            `id`, `univ_id`, `univ_facilities_id`, `name`, `image`,
             `created_at`, `updated_at`, `deleted_at`
         ) VALUES (
-            :univ_id, :univ_facilities_id, :name, :image,
+            :id, :univ_id, :univ_facilities_id, :name, :image,
             :created_at, :updated_at, :deleted_at
         )
-        ON DUPLICATE KEY UPDATE
-            `name` = VALUES(`name`),
-            `image` = COALESCE(VALUES(`image`), `image`),
-            `updated_at` = VALUES(`updated_at`)
     ");
 
     $inserted = 0;
+    $nullCategories = 0;
     foreach ($sourceRows as $row) {
         $categoryId = mapFacilityNameToCategoryId($row['fac_name'], $categoryMap);
+        if ($categoryId === null) {
+            $nullCategories++;
+        }
 
-        $name = !empty($row['detail_name']) ? mb_substr(trim($row['detail_name']), 0, 45) : mb_substr(trim($row['fac_name']), 0, 45);
+        $name = !empty($row['detail_name']) ? trim($row['detail_name']) : trim($row['fac_name']);
         $image = !empty($row['image']) ? trim($row['image']) : null;
         $createdAt = !empty($row['created_at']) ? $row['created_at'] : date('Y-m-d H:i:s');
         $updatedAt = !empty($row['updated_at']) ? $row['updated_at'] : null;
         $deletedAt = !empty($row['deleted_at']) ? $row['deleted_at'] : null;
 
-        $insertHasStmt->execute([
+        $insertStmt->execute([
+            ':id'                 => $row['detail_id'],
             ':univ_id'            => $row['univ_id'],
             ':univ_facilities_id' => $categoryId,
             ':name'               => $name,
@@ -170,14 +188,15 @@ try {
 
     $totalInTarget = (int) $pdo->query("SELECT COUNT(*) c FROM `$targetDb`.`univ_has_facilities`")->fetch()['c'];
 
-    echo "   -> Total detail baris di sumber : $totalSource\n";
-    echo "   -> Total proses migrasi         : $inserted\n";
-    echo "   -> Total baris tersimpan di target univ_has_facilities : $totalInTarget\n";
+    echo "   -> Total data detail di sumber       : $totalSource\n";
+    echo "   -> Total berhasil dimasukkan ke target: $inserted\n";
+    echo "   -> Data dengan kategori NULL (tidak yakin/lainnya): $nullCategories\n";
+    echo "   -> Total baris di tabel target       : $totalInTarget\n";
 
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
     echo "\n====================================================================\n";
-    echo "    MIGRASI DATA FASILITAS UNIVERSITAS SELESAI!                     \n";
+    echo "    MIGRASI DATA FASILITAS UNIVERSITAS SELESAI LENGKAP!             \n";
     echo "====================================================================\n";
 
 } catch (PDOException $e) {

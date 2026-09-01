@@ -99,6 +99,10 @@ try {
     // TAHAP 2 : MIGRASI ENROLLMENT_PROGRAMS (student_program_details -> enrollment_programs)
     // =========================================================================
     echo "2. Memigrasi tabel enrollment_programs (sumber: student_program_details)...\n";
+    
+    // Pastikan kolom student_program_id dapat bernilai NULL
+    $pdo->exec("ALTER TABLE `$targetDb`.`enrollment_programs` MODIFY COLUMN `student_program_id` BIGINT(20) UNSIGNED NULL");
+
     $affected2 = $pdo->exec("
         INSERT INTO `$targetDb`.`enrollment_programs` (
             `id`,
@@ -120,29 +124,14 @@ try {
             spd.`updated_at`,
             spd.`deleted_at`
         FROM `$sourceDb`.`student_program_details` spd
-        -- FK ke enrollments: student_program_id harus valid
-        INNER JOIN `$targetDb`.`enrollments` e ON spd.`student_program_id` = e.`id`
-        -- FK ke univ_programs: program_id harus valid
-        INNER JOIN `$targetDb`.`univ_programs` up ON spd.`program_id` = up.`id`
     ");
 
     $total2 = (int) $pdo->query("SELECT COUNT(*) c FROM `$sourceDb`.`student_program_details`")->fetch()['c'];
-    $skip2  = $total2 - $affected2;
+    $nullSP = (int) $pdo->query("SELECT COUNT(*) c FROM `$targetDb`.`enrollment_programs` WHERE student_program_id IS NULL")->fetch()['c'];
 
-    echo "   -> Total sumber        : $total2\n";
-    echo "   -> Berhasil dimigrasi  : $affected2\n";
-    echo "   -> Di-skip             : $skip2";
-    if ($skip2 > 0) {
-        $nullSP = (int) $pdo->query("SELECT COUNT(*) c FROM `$sourceDb`.`student_program_details` WHERE student_program_id IS NULL")->fetch()['c'];
-        $orphanProg = (int) $pdo->query("
-            SELECT COUNT(*) c
-            FROM `$sourceDb`.`student_program_details` spd
-            LEFT JOIN `$targetDb`.`univ_programs` up ON up.id = spd.program_id
-            WHERE spd.student_program_id IS NOT NULL AND up.id IS NULL
-        ")->fetch()['c'];
-        echo " (student_program_id NULL: $nullSP, program_id tidak valid: $orphanProg)";
-    }
-    echo "\n\n";
+    echo "   -> Total sumber                : $total2\n";
+    echo "   -> Berhasil dimigrasi          : $affected2\n";
+    echo "   -> Data dengan student_program_id NULL: $nullSP\n\n";
 
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
