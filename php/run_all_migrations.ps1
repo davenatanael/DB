@@ -33,8 +33,10 @@ $scripts = @(
     @{ Title = '[26/30] Migrasi Student Relations (Favorites, File Types Program, Discounts, Student Payments)'; Script = 'migrate_student_relations.php' },
     @{ Title = '[27/30] Migrasi Commissions'; Script = 'migrate_commission.php' },
     @{ Title = '[28/30] Migrasi Commission Details'; Script = 'migrate_commission_details.php' },
-    @{ Title = '[29/30] Migrasi Chat (Chats, Chat Users, Chat Messages)'; Script = 'migrate_chat.php' },
-    @{ Title = '[30/30] Migrasi Employees (Employees, Kinerjas, Warnings)'; Script = 'migrate_employees.php' }
+    @{ Title = '[29/32] Migrasi Chat (Chats, Chat Users, Chat Messages)'; Script = 'migrate_chat.php' },
+    @{ Title = '[30/32] Migrasi Employees (Employees, Kinerjas, Warnings)'; Script = 'migrate_employees.php' },
+    @{ Title = '[31/32] Migrasi Guests'; Script = 'migrate_guests.php' },
+    @{ Title = '[32/32] Migrasi Consultations (bergantung pada Guests)'; Script = 'migrate_consultations.php' }
 )
 
 foreach ($s in $scripts) {
