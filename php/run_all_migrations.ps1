@@ -5,7 +5,7 @@ Write-Host ''
 Set-Location -Path $PSScriptRoot
 
 $scripts = @(
-    @{ Title = '[1/32] Migrasi Roles'; Script = 'migrate_role.php' },
+    @{ Title = '[1/32] Migrasi Roles & Privileges'; Script = 'migrate_role.php' },
     @{ Title = '[2/32] Migrasi Privileges has Roles'; Script = 'migrate_privileges_has_roles.php' },
     @{ Title = '[3/32] Migrasi Users'; Script = 'migrate_user.php' },
     @{ Title = '[4/32] Migrasi Bank Accounts'; Script = 'migrate_bank_accounts.php' },

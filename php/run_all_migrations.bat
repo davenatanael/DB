@@ -7,7 +7,7 @@ echo.
 
 cd /d "%~dp0"
 
-echo [1/32] Migrasi Roles...
+echo [1/32] Migrasi Roles & Privileges...
 call php migrate_role.php
 echo.
 
