@@ -271,6 +271,11 @@ try {
     }
     echo str_repeat("=", 95) . "\n\n";
 
+    echo "\n4. Tabel `companion_travel_historys`:\n";
+    echo "   -> Tabel ini adalah tabel BARU di skema db_ybaik_new.\n";
+    echo "   -> Tidak ada data riwayat perjalanan di database lama (outclassco_marketing).\n";
+    echo "   -> Tabel sudah di-TRUNCATE dan siap diisi oleh aplikasi.\n\n";
+
     echo "====================================================================\n";
     echo "                 MIGRASI COMPANIONS SELESAI                         \n";
     echo "====================================================================\n";

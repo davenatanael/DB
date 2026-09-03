@@ -28,7 +28,7 @@ try {
     $pdo->exec("TRUNCATE TABLE `student_payment_types`");
 
     // ==========================================
-    // 1. student_payment_types (prasyarat)
+    // 1. student_payment_types (prasyarat - HARUS JALAN DULUAN)
     // ==========================================
     echo "1. Migrasi student_payment_types...\n";
     $migrateTypes = "
@@ -54,8 +54,15 @@ try {
 
     // ==========================================
     // 2. payments (dari student_payments)
+    //    Catatan: 431/433 baris di sumber memiliki student_payment_type_id NULL,
+    //    sedangkan skema target NOT NULL. Solusi: ALTER kolom agar menerima NULL.
     // ==========================================
     echo "2. Migrasi payments...\n";
+
+    // Sesuaikan skema target agar menerima NULL pada student_payment_type_id
+    $pdo->exec("ALTER TABLE `payments` MODIFY COLUMN `student_payment_type_id` BIGINT UNSIGNED NULL");
+    echo "   -> Kolom student_payment_type_id diubah menjadi NULLABLE.\n";
+
     $migratePayments = "
         INSERT INTO `payments` (
             `id`,

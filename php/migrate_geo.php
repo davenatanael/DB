@@ -13,8 +13,9 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ]);
 
-    // Nonaktifkan Foreign Key Checks sementara
+    // Nonaktifkan Foreign Key Checks dan relaksasi sql_mode untuk menangani zero-date ('0000-00-00 00:00:00')
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
+    $pdo->exec("SET sql_mode = ''");
 
     // ==========================================
     // 1. MIGRASI DATA regions

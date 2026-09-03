@@ -27,6 +27,8 @@ try {
 
     $pdo->exec("SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci");
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
+    // Relaksasi sql_mode agar bisa membaca '0000-00-00 00:00:00' dari tabel sumber
+    $pdo->exec("SET sql_mode = ''");
 
     echo "====================================================================\n";
     echo "       MEMULAI MIGRASI DATA EMPLOYEES                               \n";
@@ -55,7 +57,10 @@ try {
             `marriage_status`, `total_child`, `start_work_date`, `position`, `work_status`,
             `photo`, `id_card_photo`, `resign_at`, `resign_reason`, `division_id`,
             `emergency_contact_name`, `emergency_contact_address`, `emergency_contact_phone`, `emergency_contact_relation`,
-            `status`, `created_at`, `updated_at`, `deleted_at`
+            `status`,
+            NULLIF(`created_at`, '0000-00-00 00:00:00'),
+            NULLIF(`updated_at`, '0000-00-00 00:00:00'),
+            `deleted_at`
         FROM `$sourceDb`.`employees`
     ";
     $affEmp = $pdo->exec($sqlEmp);

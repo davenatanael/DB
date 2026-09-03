@@ -1074,7 +1074,7 @@ CREATE TABLE IF NOT EXISTS `sekolah` (
   `alamat_jalan` varchar(255) DEFAULT NULL,
   `lintang` varchar(255) DEFAULT NULL,
   `bujur` varchar(255) DEFAULT NULL,
-  `agent_id` bigint unsigned NOT NULL,
+  `agent_id` bigint unsigned DEFAULT NULL,
   `created_by` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
