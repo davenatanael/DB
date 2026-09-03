@@ -15,7 +15,7 @@ try {
 
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
 
-    $pdo->exec("TRUNCATE TABLE `$targetDb`.`roles`");
+    $pdo->exec("DELETE FROM `$targetDb`.`roles`");
     $pdo->exec("
         INSERT INTO `$targetDb`.`roles` (`id`, `name`) VALUES
         (1, 'Superadmin'),
@@ -29,7 +29,7 @@ try {
         (9, 'Student')
     ");
 
-    $pdo->exec("TRUNCATE TABLE `$targetDb`.`users`");
+    $pdo->exec("DELETE FROM `$targetDb`.`users`");
 
     $migrateSql = "
         INSERT INTO `$targetDb`.`users` (

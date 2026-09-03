@@ -34,7 +34,7 @@ try {
     // 1. Inisialisasi Tabel Roles
     // -------------------------------------------------------------
     echo "Memulai migrasi master Roles...\n";
-    $pdo->exec("TRUNCATE TABLE `$targetDb`.`roles`;");
+    $pdo->exec("DELETE FROM `$targetDb`.`roles`;");
 
     $sqlRoles = "
         INSERT INTO `$targetDb`.`roles` (`id`, `name`) VALUES
@@ -55,7 +55,7 @@ try {
     // 2. Migrasi Tabel Privileges
     // -------------------------------------------------------------
     echo "Memulai migrasi master Privileges...\n";
-    $pdo->exec("TRUNCATE TABLE `$targetDb`.`privileges`;");
+    $pdo->exec("DELETE FROM `$targetDb`.`privileges`;");
 
     $migratePrivilegesSql = "
         INSERT INTO `$targetDb`.`privileges` (

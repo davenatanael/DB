@@ -31,7 +31,7 @@ try {
     // 1. student_file_types (prasyarat)
     // ==========================================
     echo "1. Migrasi student_file_types...\n";
-    $pdo->exec("TRUNCATE TABLE `$targetDb`.`student_file_types`");
+    $pdo->exec("DELETE FROM `$targetDb`.`student_file_types`");
     $affected1 = $pdo->exec("
         INSERT INTO `$targetDb`.`student_file_types` (
             `id`, `name`, `is_additional`, `order`, `mime_type`,
@@ -48,7 +48,7 @@ try {
     // 2. student_files
     // ==========================================
     echo "2. Migrasi student_files...\n";
-    $pdo->exec("TRUNCATE TABLE `$targetDb`.`student_files`");
+    $pdo->exec("DELETE FROM `$targetDb`.`student_files`");
     $affected2 = $pdo->exec("
         INSERT INTO `$targetDb`.`student_files` (
             `id`, `student_id`, `filename`, `type`, `status`,
@@ -67,7 +67,7 @@ try {
     // 3. file_type_tutorial
     // ==========================================
     echo "3. Migrasi file_type_tutorial...\n";
-    $pdo->exec("TRUNCATE TABLE `$targetDb`.`file_type_tutorial`");
+    $pdo->exec("DELETE FROM `$targetDb`.`file_type_tutorial`");
     $affected3 = $pdo->exec("
         INSERT INTO `$targetDb`.`file_type_tutorial` (
             `id`, `file_type_id`, `content`, `created_at`, `updated_at`

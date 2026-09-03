@@ -11,7 +11,7 @@ echo Initialize Migration : drop data di tabel baru
 call php init_migration.php
 echo.
 
-echo [1/34] Migrasi Roles & Privileges...
+echo [1/34] Migrasi Roles ^& Privileges...
 call php migrate_role.php
 echo.
 
