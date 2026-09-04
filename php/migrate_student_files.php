@@ -1,15 +1,18 @@
 <?php
 
 /**
- * migrate_student_files_group.php
+ * migrate_student_files.php
  *
  * Migrasi grup tabel file dokumen student:
- *   1. student_file_types  (prasyarat, FK dari student_files & file_type_tutorial)
- *   2. student_files       (FK -> students, student_file_types)
- *   3. file_type_tutorial  (FK -> student_file_types)
+ *   1. student_file_types            (prasyarat, FK dari student_files, file_type_tutorial, student_file_type_univ_program)
+ *   2. student_files                 (FK -> students, student_file_types)
+ *   3. file_type_tutorial            (FK -> student_file_types)
+ *   4. student_file_type_univ_program(FK -> student_file_types, universities, univ_programs)
  *
- * Struktur lama vs baru identik (cuma nambah deleted_at + FK resmi),
- * jadi migrasinya lurus, tidak ada transformasi kolom.
+ * Catatan Struktur student_file_type_univ_program:
+ * - Kolom bersama: id, student_file_type_id, univ_id, program_id, created_at, updated_at
+ * - program_id bersifat NULLABLE (NULL berarti tipe file berlaku umum untuk seluruh prodi di univ tsb).
+ * - Kolom baru di DB Baru: deleted_at (diisi NULL).
  */
 
 $host = '127.0.0.1';
@@ -78,10 +81,40 @@ try {
     ");
     echo "   -> $affected3 baris.\n\n";
 
+    // ==========================================
+    // 4. student_file_type_univ_program
+    // ==========================================
+    echo "4. Migrasi student_file_type_univ_program...\n";
+    $pdo->exec("DELETE FROM `$targetDb`.`student_file_type_univ_program`");
+    $affected4 = $pdo->exec("
+        INSERT INTO `$targetDb`.`student_file_type_univ_program` (
+            `id`,
+            `student_file_type_id`,
+            `univ_id`,
+            `program_id`,
+            `created_at`,
+            `updated_at`,
+            `deleted_at`
+        )
+        SELECT
+            sftup.`id`,
+            sftup.`student_file_type_id`,
+            sftup.`univ_id`,
+            sftup.`program_id`,
+            COALESCE(sftup.`created_at`, NOW()),
+            COALESCE(sftup.`updated_at`, NOW()),
+            NULL AS `deleted_at`
+        FROM `$sourceDb`.`student_file_type_univ_program` sftup
+        INNER JOIN `$targetDb`.`student_file_types` sft ON sftup.`student_file_type_id` = sft.`id`
+        INNER JOIN `$targetDb`.`universities` u ON sftup.`univ_id` = u.`id`
+    ");
+    $totalSource4 = (int) $pdo->query("SELECT COUNT(*) FROM `$sourceDb`.`student_file_type_univ_program`")->fetchColumn();
+    echo "   -> Total di sumber: $totalSource4 | Berhasil dimigrasi: $affected4 baris.\n\n";
+
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
-    echo "=== Migrasi student_file_types, student_files, file_type_tutorial Selesai ===\n";
-    echo "student_file_types=$affected1, student_files=$affected2, file_type_tutorial=$affected3\n";
+    echo "=== Migrasi File Dokumen Student Selesai ===\n";
+    echo "student_file_types=$affected1, student_files=$affected2, file_type_tutorial=$affected3, student_file_type_univ_program=$affected4\n";
 
 } catch (PDOException $e) {
     if (isset($pdo)) {
