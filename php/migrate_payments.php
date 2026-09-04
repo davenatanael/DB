@@ -21,6 +21,7 @@ try {
     echo "Memulai migrasi grup tabel payments...\n\n";
 
     // Kosongkan tabel tujuan dengan urutan dari anak/terkait ke induk
+    $pdo->exec("TRUNCATE TABLE `payment_student_programs`");
     $pdo->exec("TRUNCATE TABLE `students_has_payments`");
     $pdo->exec("TRUNCATE TABLE `payment_receipts`");
     $pdo->exec("TRUNCATE TABLE `payment_details`");
@@ -236,6 +237,33 @@ try {
     ";
     $affectedPivot = $pdo->exec($migratePivot);
     echo "   -> Berhasil dimigrasi : $affectedPivot baris.\n\n";
+
+    // ==========================================
+    // 6. payment_student_programs
+    // ==========================================
+    echo "6. Migrasi payment_student_programs...\n";
+    $migratePsp = "
+        INSERT INTO `payment_student_programs` (
+            `id`,
+            `payment_id`,
+            `student_program_id`,
+            `created_at`,
+            `updated_at`,
+            `deleted_at`
+        )
+        SELECT
+            `id`,
+            `payment_id`,
+            `student_program_id`,
+            COALESCE(`created_at`, NOW()),
+            COALESCE(`updated_at`, NOW()),
+            NULL AS `deleted_at`
+        FROM `$sourceDb`.`payment_student_programs`
+    ";
+    $affectedPsp = $pdo->exec($migratePsp);
+    $totalPsp = (int) $pdo->query("SELECT COUNT(*) c FROM `$sourceDb`.`payment_student_programs`")->fetch()['c'];
+    echo "   -> Total di sumber : $totalPsp\n";
+    echo "   -> Berhasil dimigrasi : $affectedPsp baris.\n\n";
 
     // Aktifkan kembali Foreign Key Checks
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
