@@ -10,18 +10,16 @@
  * Target : db_ybaik_new.sekolah
  *
  * Logika Pencocokan Agent ID:
- *   - Pada skema baru, kolom korwil_id, koordinator_id, dan consultant_id digantikan
- *     oleh satu kolom relasi tunggal: `agent_id` (FK ke db_ybaik_new.agents.id).
- *   - Pencocokan korwil_id lama:
- *       outclassco_marketing.korwils (id -> user_id) -> db_ybaik_new.agents (users_id -> id)
- *   - Fallback jika korwil_id NULL:
- *       koordinator_id : outclassco_marketing.koordinators (id -> user_id) -> db_ybaik_new.agents (users_id -> id)
- *       consultant_id  : outclassco_marketing.consultants (id -> user_id) -> db_ybaik_new.agents (users_id -> id)
- *   - Jika tidak ada relasi agent, agent_id diisi NULL.
+ *   - Pada skema baru, data agent disatukan ke dalam tabel `agents`.
+ *   - Kolom `agent_id` di db_ybaik_new.sekolah mengambil relasi dari `consultant_id` data lama.
+ *   - Karena setelah migrasi data consultant disatukan ke tabel `agents`, ID-nya berubah.
+ *   - Penyesuaian ID lama ke ID baru dilakukan melalui relasi user_id:
+ *       outclassco_marketing.consultants (id -> user_id) -> db_ybaik_new.agents (users_id -> id)
+ *   - Jika consultant_id NULL, maka agent_id diisi NULL.
  *
  * Catatan Schema & Data:
  *   - Kolom `agent_id` diizinkan NULL (`DEFAULT NULL`) karena sebagian besar sekolah merupakan
- *     data master nasional yang belum memiliki agen terkait.
+ *     data master nasional yang belum memiliki agen/konsultan terkait.
  *   - Kolom `country_id` dinormalisasi dengan default 102 (Indonesia) jika NULL.
  *   - Kolom `npsn` di-trim dan di-NULL-kan jika string kosong untuk mematuhi UNIQUE KEY.
  *
@@ -46,7 +44,7 @@ try {
     $pdo->exec("SET sql_mode = ''");
 
     echo "====================================================================\n";
-    echo "    MEMULAI MIGRASI DATA SEKOLAH & RELASI AGENTS                    \n";
+    echo "    MEMULAI MIGRASI DATA SEKOLAH & RELASI AGENTS (CONSULTANT)       \n";
     echo "====================================================================\n\n";
 
     // 1. Pastikan kolom agent_id mengizinkan NULL (karena di DDL awal mungkin NOT NULL)
@@ -56,19 +54,15 @@ try {
     $pdo->exec("TRUNCATE TABLE `$targetDb`.`sekolah`");
     echo "-> Tabel `sekolah` di $targetDb berhasil dikosongkan.\n\n";
 
-    // 3. Ambil data referensi mapping Korwil untuk logging & verifikasi
-    $stmtKw = $pdo->query("
-        SELECT kw.id AS old_korwil_id, kw.name AS korwil_name, kw.user_id, a.id AS new_agent_id
-        FROM `$sourceDb`.`korwils` kw
-        JOIN `$targetDb`.`agents` a ON kw.user_id = a.users_id
-        ORDER BY kw.id ASC
+    // 3. Ambil data referensi mapping Consultant ke Agents untuk logging & verifikasi
+    $stmtCs = $pdo->query("
+        SELECT cs.id AS old_consultant_id, cs.name AS consultant_name, cs.user_id, a.id AS new_agent_id
+        FROM `$sourceDb`.`consultants` cs
+        JOIN `$targetDb`.`agents` a ON cs.user_id = a.users_id
+        ORDER BY cs.id ASC
     ");
-    $korwilMap = $stmtKw->fetchAll();
-    echo "-> Terdeteksi " . count($korwilMap) . " Korwil yang terhubung ke Agents di target DB:\n";
-    foreach ($korwilMap as $km) {
-        echo "   - [Old korwil_id: {$km['old_korwil_id']}] {$km['korwil_name']} (user_id: {$km['user_id']}) -> [New agent_id: {$km['new_agent_id']}]\n";
-    }
-    echo "\n";
+    $consultantMap = $stmtCs->fetchAll();
+    echo "-> Terdeteksi " . count($consultantMap) . " Consultant terhubung ke Agents di target DB.\n\n";
 
     $startTime = microtime(true);
     echo "-> Memproses migrasi data sekolah dari $sourceDb.sekolah ke $targetDb.sekolah...\n";
@@ -112,20 +106,14 @@ try {
             s.`alamat_jalan`,
             s.`lintang`,
             s.`bujur`,
-            -- Pemetaan agent_id: Utamakan Korwil (pengganti korwil_id), fallback ke Koordinator / Consultant jika ada
-            COALESCE(a_kw.`id`, a_kd.`id`, a_cs.`id`) AS `agent_id`,
+            -- Pemetaan agent_id: Mengambil dari consultant_id lama yang disesuaikan ke new agent_id
+            a_cs.`id` AS `agent_id`,
             s.`created_by`,
             s.`created_at`,
             s.`updated_at`,
             s.`deleted_at`
         FROM `$sourceDb`.`sekolah` s
-        -- Map korwil_id (outclassco_marketing.korwils.id -> agents.id)
-        LEFT JOIN `$sourceDb`.`korwils` kw ON s.`korwil_id` = kw.`id`
-        LEFT JOIN `$targetDb`.`agents` a_kw ON kw.`user_id` = a_kw.`users_id`
-        -- Map koordinator_id (outclassco_marketing.koordinators.id -> agents.id)
-        LEFT JOIN `$sourceDb`.`koordinators` kd ON s.`koordinator_id` = kd.`id`
-        LEFT JOIN `$targetDb`.`agents` a_kd ON kd.`user_id` = a_kd.`users_id`
-        -- Map consultant_id (outclassco_marketing.consultants.id -> agents.id)
+        -- Map consultant_id (outclassco_marketing.consultants.id -> user_id -> db_ybaik_new.agents.id)
         LEFT JOIN `$sourceDb`.`consultants` cs ON s.`consultant_id` = cs.`id`
         LEFT JOIN `$targetDb`.`agents` a_cs ON cs.`user_id` = a_cs.`users_id`
     ";
@@ -135,39 +123,35 @@ try {
 
     $totalInTarget = (int)$pdo->query("SELECT COUNT(*) FROM `$targetDb`.`sekolah`")->fetchColumn();
     $withAgent     = (int)$pdo->query("SELECT COUNT(*) FROM `$targetDb`.`sekolah` WHERE agent_id IS NOT NULL")->fetchColumn();
-    $withKw        = (int)$pdo->query("
-        SELECT COUNT(*) 
-        FROM `$targetDb`.`sekolah` s
-        JOIN `$targetDb`.`agents` a ON s.agent_id = a.id
-        JOIN `$targetDb`.`users` u ON a.users_id = u.id
-        WHERE u.role_id = 3
-    ")->fetchColumn();
-    $withCons      = (int)$pdo->query("
-        SELECT COUNT(*) 
-        FROM `$targetDb`.`sekolah` s
-        JOIN `$targetDb`.`agents` a ON s.agent_id = a.id
-        JOIN `$targetDb`.`users` u ON a.users_id = u.id
-        WHERE u.role_id = 5
-    ")->fetchColumn();
 
     echo "\n=== HASIL MIGRASI DATA SEKOLAH ===\n";
     echo "Waktu eksekusi                      : $elapsed detik\n";
     echo "Total data berhasil dimasukkan      : $affected baris\n";
     echo "Total data di target DB             : $totalInTarget baris\n";
     echo "Total Sekolah dengan Agent terhubung: $withAgent sekolah\n";
-    echo "  -> Terhubung ke Korwil (Role 3)   : $withKw sekolah\n";
-    echo "  -> Terhubung ke Consultant (Role 5): $withCons sekolah\n";
 
-    echo "\nDetail Sekolah yang Terhubung ke Korwil:\n";
-    $detailKw = $pdo->query("
-        SELECT s.id, s.sekolah, s.agent_id, u.name AS korwil_name
+    echo "\nDetail Sekolah yang Terhubung ke Consultant (New Agent ID):\n";
+    $detailSekolah = $pdo->query("
+        SELECT 
+            s.id, 
+            s.sekolah, 
+            s.agent_id, 
+            u.name AS consultant_name,
+            u.email AS consultant_email
         FROM `$targetDb`.`sekolah` s
         JOIN `$targetDb`.`agents` a ON s.agent_id = a.id
         JOIN `$targetDb`.`users` u ON a.users_id = u.id
-        WHERE u.role_id = 3
+        ORDER BY s.id ASC
     ")->fetchAll();
-    foreach ($detailKw as $dk) {
-        echo "   - [ID: {$dk['id']}] {$dk['sekolah']} -> agent_id: {$dk['agent_id']} ({$dk['korwil_name']})\n";
+
+    foreach ($detailSekolah as $ds) {
+        echo sprintf(
+            "   - [Sekolah ID: %-6d] %-35s -> agent_id: %-3d (%s)\n",
+            $ds['id'],
+            $ds['sekolah'],
+            $ds['agent_id'],
+            $ds['consultant_name']
+        );
     }
 
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
@@ -183,3 +167,4 @@ try {
     echo "Error migrasi: " . $e->getMessage() . "\n";
     exit(1);
 }
+
