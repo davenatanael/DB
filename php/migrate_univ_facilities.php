@@ -88,23 +88,61 @@ try {
     echo "    MEMULAI MIGRASI DATA FASILITAS UNIVERSITAS LENGKAP              \n";
     echo "====================================================================\n\n";
 
+    // Cek apakah tabel bernama univ_has_facilites (typo bawaan skema) dan sesuaikan namanya
+    $hasTableCorrect = $pdo->query("SHOW TABLES FROM `$targetDb` LIKE 'univ_has_facilities'")->fetch();
+    if (!$hasTableCorrect) {
+        $hasTableTypo = $pdo->query("SHOW TABLES FROM `$targetDb` LIKE 'univ_has_facilites'")->fetch();
+        if ($hasTableTypo) {
+            $pdo->exec("RENAME TABLE `$targetDb`.`univ_has_facilites` TO `$targetDb`.`univ_has_facilities`");
+            echo "-> Menyesuaikan nama tabel `univ_has_facilites` -> `univ_has_facilities`.\n";
+        }
+    }
+
     // Pastikan struktur tabel univ_has_facilities mendukung id AUTO_INCREMENT dan univ_facilities_id NULL
     $checkId = $pdo->query("SHOW COLUMNS FROM `$targetDb`.`univ_has_facilities` LIKE 'id'")->fetch();
     if (!$checkId) {
         echo "Menyesuaikan struktur tabel `univ_has_facilities`...\n";
+        
+        // Hapus foreign key terlebih dahulu agar kolom univ_facilities_id bisa dimodifikasi
+        try {
+            $pdo->exec("ALTER TABLE `$targetDb`.`univ_has_facilities` DROP FOREIGN KEY `fk_univ_facilities_has_universities_univ_facilities1`");
+        } catch (Exception $e) {
+            // Abaikan jika FK memang belum ada
+        }
+
         $pdo->exec("
             ALTER TABLE `$targetDb`.`univ_has_facilities`
-            MODIFY COLUMN `univ_facilities_id` BIGINT(20) NULL,
+            MODIFY COLUMN `univ_facilities_id` BIGINT(20) UNSIGNED NULL,
             MODIFY COLUMN `name` VARCHAR(255) NULL,
             DROP PRIMARY KEY,
             ADD COLUMN `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST
         ");
+
+        // Pasang kembali Foreign Key dengan ON DELETE SET NULL
+        try {
+            $pdo->exec("
+                ALTER TABLE `$targetDb`.`univ_has_facilities`
+                ADD CONSTRAINT `fk_univ_facilities_has_universities_univ_facilities1`
+                FOREIGN KEY (`univ_facilities_id`) REFERENCES `$targetDb`.`univ_facilities` (`id`) ON DELETE SET NULL
+            ");
+        } catch (Exception $e) {
+            // Abaikan jika penambahan FK tidak didukung
+        }
+
         echo "-> Struktur tabel `univ_has_facilities` berhasil disesuaikan.\n\n";
     }
 
     // Kosongkan tabel target
-    $pdo->exec("TRUNCATE TABLE `$targetDb`.`univ_has_facilities`");
-    $pdo->exec("TRUNCATE TABLE `$targetDb`.`univ_facilities`");
+    try {
+        $pdo->exec("TRUNCATE TABLE `$targetDb`.`univ_has_facilities`");
+    } catch (PDOException $e) {
+        $pdo->exec("DELETE FROM `$targetDb`.`univ_has_facilities`");
+    }
+    try {
+        $pdo->exec("TRUNCATE TABLE `$targetDb`.`univ_facilities`");
+    } catch (PDOException $e) {
+        $pdo->exec("DELETE FROM `$targetDb`.`univ_facilities`");
+    }
     echo "-> Tabel `univ_has_facilities` dan `univ_facilities` berhasil dikosongkan.\n\n";
 
     // =========================================================================

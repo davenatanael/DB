@@ -42,11 +42,19 @@ try {
     } else {
         $count = 0;
         foreach ($tables as $table) {
-            $pdo->exec("TRUNCATE TABLE `$targetDb`.`$table`;");
+            try {
+                $pdo->exec("TRUNCATE TABLE `$targetDb`.`$table`;");
+                echo "-> Truncated: `$table`\n";
+            } catch (PDOException $e) {
+                // TRUNCATE adalah operasi DDL yang me-recreate tabel, sehingga
+                // InnoDB dapat memicu error 1215 FK constraint meski FK checks nonaktif.
+                // Fallback menggunakan DELETE FROM yang beroperasi di level DML.
+                $pdo->exec("DELETE FROM `$targetDb`.`$table`;");
+                echo "-> Cleared (via DELETE): `$table`\n";
+            }
             $count++;
-            echo "-> Truncated: `$table`\n";
         }
-        echo "\nBerhasil me-reset (TRUNCATE) sebanyak $count tabel di `$targetDb`.\n";
+        echo "\nBerhasil me-reset sebanyak $count tabel di `$targetDb`.\n";
     }
 
     // 3. Aktifkan kembali foreign key checks

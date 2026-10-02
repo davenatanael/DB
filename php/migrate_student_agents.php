@@ -125,6 +125,25 @@ try {
 
     echo "   -> Ditemukan $totalStudents data student untuk diproses.\n\n";
 
+    // Pastikan kolom relasi agent tersedia pada tabel students
+    $existingCols = $pdo->query("SHOW COLUMNS FROM `$targetDb`.`students`")->fetchAll(PDO::FETCH_COLUMN);
+    $missingCols = [];
+    if (!in_array('korwil_id', $existingCols)) {
+        $missingCols[] = "ADD COLUMN `korwil_id` BIGINT UNSIGNED NULL DEFAULT NULL AFTER `user_id`";
+    }
+    if (!in_array('koordinator_id', $existingCols)) {
+        $missingCols[] = "ADD COLUMN `koordinator_id` BIGINT UNSIGNED NULL DEFAULT NULL AFTER `korwil_id`";
+    }
+    if (!in_array('consultant_id', $existingCols)) {
+        $missingCols[] = "ADD COLUMN `consultant_id` BIGINT UNSIGNED NULL DEFAULT NULL AFTER `koordinator_id`";
+    }
+
+    if (!empty($missingCols)) {
+        echo "Menambahkan kolom relasi agent (korwil_id, koordinator_id, consultant_id) ke tabel students...\n";
+        $pdo->exec("ALTER TABLE `$targetDb`.`students` " . implode(', ', $missingCols));
+        echo "-> Kolom relasi agent berhasil ditambahkan ke tabel students.\n\n";
+    }
+
     echo "2. Memperbarui kolom korwil_id, koordinator_id, consultant_id pada tabel students...\n";
 
     $updateStmt = $pdo->prepare("
@@ -207,6 +226,35 @@ try {
                 'consultant'   => $consMap[$oldCsId]['agent_name'] ?? '-',
                 'cs_agent_id'  => $newCsAgentId ?? 'NULL',
             ];
+        }
+    }
+
+    // Pasang foreign key constraints ke tabel agents jika belum ada
+    $existingFks = $pdo->query("
+        SELECT CONSTRAINT_NAME 
+        FROM information_schema.TABLE_CONSTRAINTS 
+        WHERE TABLE_SCHEMA = '$targetDb' 
+          AND TABLE_NAME = 'students' 
+          AND CONSTRAINT_TYPE = 'FOREIGN KEY'
+    ")->fetchAll(PDO::FETCH_COLUMN);
+
+    $missingFks = [];
+    if (!in_array('fk_students_korwil', $existingFks)) {
+        $missingFks[] = "ADD CONSTRAINT `fk_students_korwil` FOREIGN KEY (`korwil_id`) REFERENCES `agents` (`id`) ON DELETE SET NULL";
+    }
+    if (!in_array('fk_students_koordinator', $existingFks)) {
+        $missingFks[] = "ADD CONSTRAINT `fk_students_koordinator` FOREIGN KEY (`koordinator_id`) REFERENCES `agents` (`id`) ON DELETE SET NULL";
+    }
+    if (!in_array('fk_students_consultant', $existingFks)) {
+        $missingFks[] = "ADD CONSTRAINT `fk_students_consultant` FOREIGN KEY (`consultant_id`) REFERENCES `agents` (`id`) ON DELETE SET NULL";
+    }
+
+    if (!empty($missingFks)) {
+        try {
+            $pdo->exec("ALTER TABLE `$targetDb`.`students` " . implode(', ', $missingFks));
+            echo "-> Foreign Key constraints relasi agent berhasil dipasang ke tabel agents.\n\n";
+        } catch (Exception $e) {
+            // Abaikan jika penambahan FK terkendala
         }
     }
 

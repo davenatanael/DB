@@ -143,8 +143,12 @@ echo [33/34] Migrasi Locations...
 call php migrate_locations.php
 echo.
 
-echo [34/34] Migrasi Notifications...
+echo [34/35] Migrasi Notifications...
 call php migrate_notifications.php
+echo.
+
+echo [35/35] Migrasi Kurs, Tests ^& Student Tests...
+call php migrate_kurs_tests.php
 echo.
 
 echo ========================================================
