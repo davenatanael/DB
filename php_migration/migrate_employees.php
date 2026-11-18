@@ -48,7 +48,7 @@ try {
             `marriage_status`, `total_child`, `start_work_date`, `position`, `work_status`,
             `photo`, `id_card_photo`, `resign_at`, `resign_reason`, `division_id`,
             `emergency_contact_name`, `emergency_contact_address`, `emergency_contact_phone`, `emergency_contact_relation`,
-            `status`, `created_at`, `update_at`, `deleted_at`
+            `status`, `created_at`, `updated_at`, `deleted_at`
         )
         SELECT 
             `id`, `id_number`, `employee_id_number`, `first_name`, `last_name`,
